@@ -221,7 +221,6 @@ char* _sclLoadProgramSource( const char *filename )
 cl_program _sclCreateProgram( char* program_source, cl_context context )
 {
 	cl_program program;
-#ifdef DEBUG
 	cl_int err;
 	
 	program = clCreateProgramWithSource( context, 1, (const char**)&program_source, NULL, &err );
@@ -229,16 +228,12 @@ cl_program _sclCreateProgram( char* program_source, cl_context context )
 		fprintf( stderr,  "Error on createProgram" );
 		sclPrintErrorFlags( err );
 	}
-#else
-	program = clCreateProgramWithSource( context, 1, (const char**)&program_source, NULL, NULL );
-#endif
 	
 	return program;
 }
 
 void _sclBuildProgram( cl_program program, cl_device_id devices, const char* pName )
 {
-#ifdef DEBUG
 	cl_int err;
 	char build_c[4096];
 	
@@ -250,15 +245,10 @@ void _sclBuildProgram( cl_program program, cl_device_id devices, const char* pNa
 		clGetProgramBuildInfo( program, devices, CL_PROGRAM_BUILD_LOG, 4096, build_c, NULL );
 		fprintf( stderr,  "Build Log for %s_program:\n%s\n", pName, build_c );
 	}
-#else
-	clBuildProgram( program, 0, NULL, NULL, NULL, NULL );
-#endif
-
 }
 
 cl_kernel _sclCreateKernel( sclSoft software ) {
 	cl_kernel kernel;
-#ifdef DEBUG
 	cl_int err;
 
 	kernel = clCreateKernel( software.program, software.kernelName, &err );
@@ -266,44 +256,35 @@ cl_kernel _sclCreateKernel( sclSoft software ) {
 		fprintf( stderr,  "Error on createKernel %s ", software.kernelName );
 		sclPrintErrorFlags( err );
 	}
-#else
-	kernel = clCreateKernel( software.program, software.kernelName, NULL );
-#endif
 
 	return kernel;
 }
 
 cl_event sclLaunchKernel( sclHard hardware, sclSoft software, size_t *global_work_size, size_t *local_work_size) {
 	cl_event myEvent=NULL;	
-#ifdef DEBUG
 	cl_int err;
 
 	err = clEnqueueNDRangeKernel( hardware.queue, software.kernel, 2, NULL, global_work_size, local_work_size, 0, NULL, &myEvent );
 	if ( err != CL_SUCCESS ) {
 		fprintf( stderr,  "\nError on launchKernel %s", software.kernelName );
-		sclPrintErrorFlags(err); }
-#else
-	clEnqueueNDRangeKernel( hardware.queue, software.kernel, 2, NULL, global_work_size, local_work_size, 0, NULL, NULL );
-#endif
+		sclPrintErrorFlags(err);
+    }
+
 	sclFinish( hardware );
 	return myEvent;
 }
 
 cl_event sclEnqueueKernel( sclHard hardware, sclSoft software, size_t *global_work_size, size_t *local_work_size) {
 	cl_event myEvent=NULL;	
-#ifdef DEBUG
 	cl_int err;
 
 	err = clEnqueueNDRangeKernel( hardware.queue, software.kernel, 2, NULL, global_work_size, local_work_size, 0, NULL, &myEvent );
 	if ( err != CL_SUCCESS ) {
 		fprintf( stderr,  "\nError on launchKernel %s", software.kernelName );
-		sclPrintErrorFlags(err); }
-#else
-	clEnqueueNDRangeKernel( hardware.queue, software.kernel, 2, NULL, global_work_size, local_work_size, 0, NULL, NULL );
-#endif
+		sclPrintErrorFlags(err);
+    }
 
 	return myEvent;
-		
 }
 
 void sclReleaseClSoft( sclSoft soft ) {
@@ -400,7 +381,6 @@ void sclPrintHardwareStatus( sclHard hardware ) {
 void _sclCreateQueues( sclHard* hardList, int found ) {
 
 	int i;
-#ifdef DEBUG
 	cl_int err;
 
 	for ( i = 0; i < found; ++i ) {
@@ -410,13 +390,6 @@ void _sclCreateQueues( sclHard* hardList, int found ) {
 			fprintf( stderr, "\nError creating command queue %d", i );
 		}
 	}
-#else
-	for ( i = 0; i < found; ++i ) {
-		hardList[i].queue = 
-		clCreateCommandQueue( hardList[i].context, hardList[i].device, NULL, NULL );
-	}
-#endif
-
 }
 
 void _sclSmartCreateContexts( sclHard* hardList, int found ) {
@@ -425,13 +398,11 @@ void _sclSmartCreateContexts( sclHard* hardList, int found ) {
 	cl_context context;
 	char var_queries1[1024];
 	char var_queries2[1024];
-#ifdef DEBUG
-	cl_int err;
-#endif
 	ptsclHard groups[10][20];
 	int i, j, groupSet = 0;
 	int groupSizes[10];
 	int nGroups = 0;
+	cl_int err;
 
 
 	for ( i = 0; i < found; ++i ) { /* Group generation */
@@ -469,14 +440,10 @@ void _sclSmartCreateContexts( sclHard* hardList, int found ) {
 		for ( j = 0; j < groupSizes[i]; ++j ) {
 			deviceList[j] = groups[i][j]->device;	
 		}
-#ifdef DEBUG
 		context = clCreateContext( 0, groupSizes[i], deviceList, NULL, NULL, &err );
 		if ( err != CL_SUCCESS ) {
 			fprintf( stderr, "\nError creating context on device %d", i );
 		}
-#else
-		context = clCreateContext( 0, groupSizes[i], deviceList, NULL, NULL, NULL );
-#endif
 		for ( j = 0; j < groupSizes[i]; ++j ) {
 			groups[i][j]->context = context;
 		}
@@ -712,7 +679,6 @@ sclSoft sclGetCLSoftware( char* path, char* name, sclHard hardware ){
 
 cl_mem sclMalloc( sclHard hardware, cl_int mode, size_t size ){
 	cl_mem buffer;
-#ifdef DEBUG
 	cl_int err;
 	
 	buffer = clCreateBuffer( hardware.context, mode, size, NULL, &err );
@@ -720,9 +686,6 @@ cl_mem sclMalloc( sclHard hardware, cl_int mode, size_t size ){
 		fprintf( stderr,  "\nclMalloc Error\n" );
 		sclPrintErrorFlags( err );
 	}
-#else
-	buffer = clCreateBuffer( hardware.context, mode, size, NULL, NULL );
-#endif
 		
 	return buffer;
 }	
@@ -732,7 +695,6 @@ cl_mem sclMallocWrite( sclHard hardware, cl_int mode, size_t size, void* hostPoi
 
 	buffer = sclMalloc( hardware, mode, size );
 
-#ifdef DEBUG
 	cl_int err;
 	
 	if ( buffer == NULL ) { 
@@ -744,14 +706,10 @@ cl_mem sclMallocWrite( sclHard hardware, cl_int mode, size_t size, void* hostPoi
 		sclPrintErrorFlags( err );
 	}
 
-#else
-	clEnqueueWriteBuffer( hardware.queue, buffer, CL_TRUE, 0, size, hostPointer, 0, NULL, NULL );
-#endif
 	return buffer;
 }
 
 void sclWrite( sclHard hardware, size_t size, cl_mem buffer, void* hostPointer ) {
-#ifdef DEBUG
 	cl_int err;
 
 	err = clEnqueueWriteBuffer( hardware.queue, buffer, CL_TRUE, 0, size, hostPointer, 0, NULL, NULL );
@@ -759,13 +717,9 @@ void sclWrite( sclHard hardware, size_t size, cl_mem buffer, void* hostPointer )
 		fprintf( stderr,  "\nclWrite Error\n" );
 		sclPrintErrorFlags( err );
 	}   
-#else
-	clEnqueueWriteBuffer( hardware.queue, buffer, CL_TRUE, 0, size, hostPointer, 0, NULL, NULL );
-#endif
 }
 
 void sclRead( sclHard hardware, size_t size, cl_mem buffer, void *hostPointer ) {
-#ifdef DEBUG
 	cl_int err;
 
 	err = clEnqueueReadBuffer( hardware.queue, buffer, CL_TRUE, 0, size, hostPointer, 0, NULL, NULL );
@@ -773,13 +727,9 @@ void sclRead( sclHard hardware, size_t size, cl_mem buffer, void *hostPointer ) 
 		fprintf( stderr,  "\nclRead Error\n" );
 		sclPrintErrorFlags( err );
        	}
-#else
-	clEnqueueReadBuffer( hardware.queue, buffer, CL_TRUE, 0, size, hostPointer, 0, NULL, NULL );
-#endif
 }
 
 cl_int sclFinish( sclHard hardware ){
-#ifdef DEBUG
 	cl_int err;
 
 	err = clFinish( hardware.queue );
@@ -787,12 +737,8 @@ cl_int sclFinish( sclHard hardware ){
 		fprintf( stderr,  "\nError clFinish\n" );
 		sclPrintErrorFlags( err );
 	}
-#else
-	clFinish( hardware.queue );
-#endif
 
 	return err;
-
 }
 
 cl_ulong sclGetEventTime( sclHard hardware, cl_event event ){
@@ -810,7 +756,6 @@ cl_ulong sclGetEventTime( sclHard hardware, cl_event event ){
 }
 
 void sclSetKernelArg( sclSoft software, int argnum, size_t typeSize, void *argument ){
-#ifdef DEBUG
 	cl_int err;
 
 	err = clSetKernelArg( software.kernel, argnum, typeSize, argument );
@@ -818,10 +763,6 @@ void sclSetKernelArg( sclSoft software, int argnum, size_t typeSize, void *argum
 		fprintf( stderr,  "\nError clSetKernelArg number %d\n", argnum );
 		sclPrintErrorFlags( err );
 	}
-#else
-	clSetKernelArg( software.kernel, argnum, typeSize, argument );
-#endif
-
 }
 
 void _sclWriteArgOnAFile( int argnum, void* arg, size_t size, const char* diff ) {
