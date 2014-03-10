@@ -333,18 +333,25 @@ sclHard* sclGetAllHardware( int* found ) {
 	_sclHardList = malloc( sizeof(sclHard) * 16 );
 
 	err = clGetPlatformIDs( 8, platforms, &nPlatforms );
+	if ( err != CL_SUCCESS) {
+		fprintf(stderr,"Error in clGetPlatformIDs\n");
+		sclPrintErrorFlags(err);
+	}
+
 	if ( nPlatforms == 0 ) {
 		fprintf( stderr, "No OpenCL platforms found\n");
+		return NULL;
 	}
 	else {
 		for ( i = 0; i < (int)nPlatforms; ++i ) {
 			err = clGetDeviceIDs( platforms[i], CL_DEVICE_TYPE_ALL, 16, devices, &nDevices );
+			if ( err != CL_SUCCESS ) {
+				fprintf( stderr, "Error clGetDeviceIDs\n" );
+				sclPrintErrorFlags( err );
+			}
+
 			if ( nDevices == 0 ) {
 				fprintf( stderr, "No OpenCL enabled device found\n");
-				if ( err != CL_SUCCESS ) {
-					fprintf( stderr, "Error clGetDeviceIDs\n" );
-					sclPrintErrorFlags( err );
-				}
 			}
 			else {
 				for ( j = 0; j < (int)nDevices; ++j ) {
