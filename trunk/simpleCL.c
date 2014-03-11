@@ -78,7 +78,7 @@ void _sclBuildProgram( cl_program program, cl_device_id devices, const char* pNa
 	cl_int err;
 	char build_c[4096];
 
-	err = clBuildProgram( program, 0, NULL, NULL, NULL, NULL );
+	err = clBuildProgram( program, 1, &devices, NULL, NULL, NULL );
 	if ( err != CL_SUCCESS ) {
 		fprintf( stderr, "Error on buildProgram\n" );
 		sclPrintErrorFlags( err );
