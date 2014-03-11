@@ -351,7 +351,7 @@ sclHard* sclGetAllHardware( int* found ) {
 			}
 
 			if ( nDevices == 0 ) {
-				fprintf( stderr, "No OpenCL enabled device found\n");
+				fprintf( stderr, "No OpenCL enabled device found at platform %d\n",i);
 			}
 			else {
 				for ( j = 0; j < (int)nDevices; ++j ) {
@@ -368,6 +368,11 @@ sclHard* sclGetAllHardware( int* found ) {
 		_sclHardListLength = *found;
 		_sclSmartCreateContexts( _sclHardList, *found );
 		_sclCreateQueues( _sclHardList, *found );
+
+		if (*found==0) {
+			fprintf(stderr,"No OpenCL enabled devices found\n");
+			return NULL;
+		}
 	}
 #ifdef DEBUG
 	sclPrintDeviceNamePlatforms( _sclHardList, *found );
