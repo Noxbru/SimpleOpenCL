@@ -31,7 +31,7 @@ extern "C" {
 sclHard* _sclHardList  = NULL;
 int _sclHardListLength = 0;
 
-char* _sclLoadProgramSource( const char *filename )
+static char* _sclLoadProgramSource( const char *filename )
 {
 	struct stat statbuf;
 	FILE *fh;
@@ -59,7 +59,7 @@ char* _sclLoadProgramSource( const char *filename )
 	return source;
 }
 
-cl_program _sclCreateProgram( char* program_source, cl_context context )
+static cl_program _sclCreateProgram( char* program_source, cl_context context )
 {
 	cl_program program;
 	cl_int err;
@@ -73,7 +73,7 @@ cl_program _sclCreateProgram( char* program_source, cl_context context )
 	return program;
 }
 
-void _sclBuildProgram( cl_program program, cl_device_id devices, const char* pName )
+static void _sclBuildProgram( cl_program program, cl_device_id devices, const char* pName )
 {
 	cl_int err;
 	char build_c[4096];
@@ -88,7 +88,7 @@ void _sclBuildProgram( cl_program program, cl_device_id devices, const char* pNa
 	}
 }
 
-cl_kernel _sclCreateKernel( sclSoft software ) {
+static cl_kernel _sclCreateKernel( sclSoft software ) {
 	cl_kernel kernel;
 	cl_int err;
 
@@ -213,7 +213,7 @@ void sclPrintHardwareStatus( sclHard hardware ) {
 	}
 }
 
-void _sclCreateQueues( sclHard* hardList, int found ) {
+static void _sclCreateQueues( sclHard* hardList, int found ) {
 	int i;
 	cl_int err;
 
@@ -226,7 +226,7 @@ void _sclCreateQueues( sclHard* hardList, int found ) {
 	}
 }
 
-void _sclSmartCreateContexts( sclHard* hardList, int found ) {
+static void _sclSmartCreateContexts( sclHard* hardList, int found ) {
 	cl_device_id deviceList[16];
 	cl_context context;
 	char var_queries1[1024];
@@ -280,7 +280,7 @@ void _sclSmartCreateContexts( sclHard* hardList, int found ) {
 	}
 }
 
-int _sclGetMaxComputeUnits( cl_device_id device ) {
+static int _sclGetMaxComputeUnits( cl_device_id device ) {
 	cl_uint nCompU;
 
 	clGetDeviceInfo( device, CL_DEVICE_MAX_COMPUTE_UNITS, 4, (void *)&nCompU, NULL );
@@ -288,7 +288,7 @@ int _sclGetMaxComputeUnits( cl_device_id device ) {
 	return (int)nCompU;
 }
 
-unsigned long int _sclGetMaxMemAllocSize( cl_device_id device ){
+static unsigned long int _sclGetMaxMemAllocSize( cl_device_id device ){
 	cl_ulong mem;
 
 	clGetDeviceInfo( device, CL_DEVICE_MAX_MEM_ALLOC_SIZE, 8, (void *)&mem, NULL );
@@ -296,7 +296,7 @@ unsigned long int _sclGetMaxMemAllocSize( cl_device_id device ){
 	return (unsigned long int)mem;
 }
 
-cl_device_type _sclGetDeviceType( cl_device_id device ) {
+static cl_device_type _sclGetDeviceType( cl_device_id device ) {
 	cl_device_type dev_type;
 
 	clGetDeviceInfo(device,CL_DEVICE_TYPE,sizeof(dev_type),&dev_type,NULL);
@@ -596,7 +596,7 @@ void sclSetKernelArg( sclSoft software, int argnum, size_t typeSize, void *argum
 	}
 }
 
-void _sclWriteArgOnAFile( int argnum, void* arg, size_t size, const char* diff ) {
+static void _sclWriteArgOnAFile( int argnum, void* arg, size_t size, const char* diff ) {
 	FILE *out;
 	char filename[150];
 
@@ -609,7 +609,7 @@ void _sclWriteArgOnAFile( int argnum, void* arg, size_t size, const char* diff )
 	fclose(out);
 }
 
- void _sclVSetKernelArgs( sclSoft software, const char *sizesValues, va_list argList ) {
+static void _sclVSetKernelArgs( sclSoft software, const char *sizesValues, va_list argList ) {
 	const char *p;
 	int argCount = 0;
 	void* argument;

@@ -144,28 +144,30 @@ sclHard 		sclGetFastestDevice( sclHard* hardList, int found );
 
 /* ####### debug ########################################## */
 
-void 			_sclWriteArgOnAFile( int argnum, void* arg, size_t size, const char* diff );
+// void 			_sclWriteArgOnAFile( int argnum, void* arg, size_t size, const char* diff );
 
 /* ######################################################## */
 
 /* ####### cl software management ######################### */
 
-void 			_sclBuildProgram( cl_program program, cl_device_id devices, const char* pName );
-cl_kernel 		_sclCreateKernel( sclSoft software );
-cl_program 		_sclCreateProgram( char* program_source, cl_context context );
-char* 			_sclLoadProgramSource( const char *filename );
+// void 			_sclBuildProgram( cl_program program, cl_device_id devices, const char* pName );
+// cl_kernel 		_sclCreateKernel( sclSoft software );
+// cl_program 		_sclCreateProgram( char* program_source, cl_context context );
+// char* 			_sclLoadProgramSource( const char *filename );
 
 /* ######################################################## */
 
 /* ####### hardware management ############################ */
 
-int									_sclGetMaxComputeUnits( cl_device_id device );
-unsigned long int 	_sclGetMaxMemAllocSize( cl_device_id device );
-cl_device_type 			_sclGetDeviceType( cl_device_id device );
-void					 			_sclSmartCreateContexts( sclHard* hardList, int found );
-void					 			_sclCreateQueues( sclHard* hardList, int found );
+// int									_sclGetMaxComputeUnits( cl_device_id device );
+// unsigned long int 	_sclGetMaxMemAllocSize( cl_device_id device );
+// cl_device_type 			_sclGetDeviceType( cl_device_id device );
+// void					 			_sclSmartCreateContexts( sclHard* hardList, int found );
+// void					 			_sclCreateQueues( sclHard* hardList, int found );
 
 /* ######################################################## */
+
+// static void _sclVSetKernelArgs( sclSoft software, const char *sizesValues, va_list argList );
 
 #ifdef __cplusplus
 }
